@@ -17,6 +17,7 @@ class Fluent::Rds_SlowlogInput < Fluent::Input
   config_param :username, :string,  :default => nil
   config_param :password, :string,  :default => nil, :secret => true
   config_param :interval, :integer, :default => 10
+  config_param :rotate,   :bool,    :default => true
 
   def initialize
     super
@@ -61,7 +62,7 @@ class Fluent::Rds_SlowlogInput < Fluent::Input
   end
 
   def output
-    @client.query('CALL mysql.rds_rotate_slow_log')
+    @client.query('CALL mysql.rds_rotate_slow_log') if @rotate
 
     slow_log_data = []
     slow_log_data = @client.query('SELECT * FROM slow_log_backup', :cast => false)
